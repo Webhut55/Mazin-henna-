@@ -3,14 +3,21 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mazin Henna | Premium Organic Henna Store</title>
+    <title>Mazin Henna Design</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             theme: {
                 extend: {
+                    colors: {
+                        cream: '#FDFBF7',
+                        sand: '#F5EFEB',
+                        maroon: '#4A0E17',
+                        espresso: '#2B1810',
+                        gold: '#D4AF37'
+                    },
                     fontFamily: {
                         serif: ['"Playfair Display"', 'serif'],
                         sans: ['Inter', 'sans-serif'],
@@ -21,341 +28,353 @@
     </script>
     <style>
         [x-cloak] { display: none !important; }
-        /* Smooth custom scrollbar for luxury feel */
-        ::-webkit-scrollbar { width: 6px; height: 6px; }
-        ::-webkit-scrollbar-track { background: #fafafa; }
-        ::-webkit-scrollbar-thumb { background: #111; }
     </style>
 </head>
-<body class="bg-[#fafafa] text-[#111] font-sans antialiased selection:bg-black selection:text-white relative min-h-screen pb-24" x-data="storeApp()" x-init="initApp()">
+<body class="bg-cream text-espresso font-sans antialiased selection:bg-gold selection:text-white" x-data="storeApp()" x-init="initApp()">
 
-    <header class="bg-white border-b border-[#eaeaea] w-full fixed top-0 z-40">
-        <div class="max-w-[1400px] mx-auto px-6 sm:px-8 h-24 flex items-center justify-between">
-            
-            <div class="flex items-center gap-3 w-1/4">
+    <!-- Header -->
+    <header class="fixed top-0 w-full bg-cream/90 backdrop-blur-md z-40 border-b border-sand/50 shadow-sm transition-all">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" @click="window.scrollTo({top:0, behavior:'smooth'})">
                 <template x-if="siteLogo">
-                    <img :src="siteLogo" class="w-12 h-12 rounded-full object-cover border border-[#eaeaea]">
+                    <img :src="siteLogo" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-sand">
                 </template>
-                <span class="font-serif text-lg tracking-widest uppercase hidden lg:block">Mazin Henna</span>
+                <div class="flex flex-col">
+                    <h1 class="font-serif text-2xl font-bold tracking-wide text-maroon leading-tight">Mazin Henna</h1>
+                    <span class="text-[10px] text-espresso/60 font-medium tracking-wider uppercase">Powered by Webhut</span>
+                </div>
             </div>
-
-            <div class="flex-1 text-center">
-                <a href="index.html" class="font-serif text-xl sm:text-2xl tracking-[0.2em] uppercase block">The Boutique</a>
-            </div>
-
-            <div class="w-1/4 flex justify-end items-center gap-4 sm:gap-6">
-                <a href="admin.html" class="text-[10px] tracking-widest uppercase text-gray-400 hover:text-black transition-colors hidden sm:inline-block">Admin</a>
-                
-                <button @click="cartOpen = true" class="relative group flex items-center gap-2 border border-[#111] px-4 py-2 hover:bg-[#111] hover:text-white transition-colors">
-                    <span class="text-[10px] font-bold tracking-widest uppercase">Cart</span>
-                    <span class="bg-[#111] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-[#111] transition-colors" x-text="cartCount()">0</span>
+            <div class="flex items-center gap-6">
+                <button @click="cartOpen = true" class="relative text-espresso hover:text-gold transition-colors flex items-center gap-2">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                    <span x-show="cartTotalItems > 0" x-text="cartTotalItems" class="absolute -top-2 -right-2 bg-maroon text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center"></span>
                 </button>
             </div>
         </div>
     </header>
 
-    <main class="pt-24">
-        
-        <section class="max-w-[1400px] mx-auto px-6 py-12 sm:py-20 border-b border-[#eaeaea]">
-            <div class="text-center max-w-2xl mx-auto space-y-4">
-                <p class="text-[10px] font-semibold tracking-[0.3em] uppercase text-gray-400">Pure, Fresh & Handcrafted</p>
-                <h2 class="font-serif text-4xl sm:text-6xl tracking-wide uppercase">Organic Elegance</h2>
-                <p class="text-sm text-gray-500 font-light leading-relaxed">Experience rich, dark stains with premium cones formulated from professional-grade botanical ingredients. Prepared fresh for every order.</p>
+    <!-- Main Content -->
+    <main class="pt-20 min-h-screen">
+        <!-- Hero -->
+        <section class="relative bg-cover bg-center overflow-hidden py-32 sm:py-40" style="background-image: url('hero_bg.png');">
+            <!-- Smooth fade to page background -->
+            <div class="absolute inset-0 bg-espresso/60 mix-blend-multiply"></div>
+            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-maroon/20 to-cream"></div>
+            
+            <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+                <h2 class="font-serif text-5xl sm:text-7xl font-bold text-white mb-6 drop-shadow-xl tracking-wide">The Art of Mazin Henna</h2>
+                <p class="text-lg sm:text-xl max-w-2xl text-sand mb-10 drop-shadow-md font-medium">Experience the richness of natural, handcrafted henna designed for luxury and lasting impressions.</p>
+                <button @click="document.getElementById('products').scrollIntoView({behavior: 'smooth'})" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-yellow-600 transition-all duration-300 font-bold tracking-widest uppercase shadow-xl hover:shadow-2xl transform hover:-translate-y-1 border border-yellow-300/30">Shop Collection</button>
             </div>
         </section>
 
-        <section class="max-w-[1400px] mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
-            
-            <aside class="lg:col-span-3 space-y-6">
-                <div class="sticky top-32 bg-white border border-[#eaeaea] p-6 sm:p-8 shadow-sm">
-                    <h3 class="font-serif text-lg tracking-wider uppercase border-b border-[#eaeaea] pb-4 mb-4">Collections</h3>
-                    <ul class="space-y-3">
-                        <li>
-                            <button @click="selectedCategory = ''" 
-                                    class="w-full text-left text-xs tracking-widest uppercase py-1 transition-colors font-medium flex items-center justify-between"
-                                    :class="selectedCategory === '' ? 'text-black font-bold pl-2 border-l-2 border-black' : 'text-gray-400 hover:text-black'">
-                                <span>All Creations</span>
-                                <span class="text-[10px]" x-text="products.length"></span>
-                            </button>
-                        </li>
-                        <template x-for="cat in categories" :key="cat.name">
-                            <li>
-                                <button @click="selectedCategory = cat.name" 
-                                        class="w-full text-left text-xs tracking-widest uppercase py-1 transition-colors font-medium flex items-center justify-between"
-                                        :class="selectedCategory === cat.name ? 'text-black font-bold pl-2 border-l-2 border-black' : 'text-gray-400 hover:text-black'">
-                                    <span x-text="cat.name"></span>
-                                    <span class="text-[10px]" x-text="products.filter(p => p.category === cat.name).length"></span>
-                                </button>
-                            </li>
-                        </template>
-                    </ul>
-                </div>
-            </aside>
-
-            <div class="lg:col-span-9">
-                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
-                    <template x-for="product in filteredProducts()" :key="product.id">
-                        <div class="bg-white border border-[#eaeaea] p-6 shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
-                            
-                            <div>
-                                <div class="w-full aspect-square border border-[#eaeaea] bg-[#fafafa] overflow-hidden relative mb-6">
-                                    <template x-if="product.image">
-                                        <img :src="product.image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+        <!-- Product Grid -->
+        <section id="products" class="max-w-7xl mx-auto px-6 py-20">
+            <div class="flex justify-between items-end mb-12">
+                <h3 class="font-serif text-3xl font-bold text-espresso">Our Products</h3>
+            </div>
+            <!-- Categories -->
+            <div x-show="categories.length > 0" class="mb-12" x-cloak>
+                <div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x">
+                    <div class="flex flex-col items-center gap-3 min-w-[100px] snap-center cursor-pointer"
+                         @click="activeCategory = 'All'">
+                        <div class="w-24 h-24 rounded-full border-2 p-1 transition-colors"
+                             :class="activeCategory === 'All' ? 'border-maroon' : 'border-sand'">
+                            <div class="w-full h-full rounded-full overflow-hidden bg-sand flex items-center justify-center font-serif text-maroon font-medium">
+                                All
+                            </div>
+                        </div>
+                        <span class="text-sm font-medium transition-colors" 
+                              :class="activeCategory === 'All' ? 'text-maroon' : 'text-espresso'">All</span>
+                    </div>
+                    
+                    <template x-for="cat in categories" :key="cat.name">
+                        <div class="flex flex-col items-center gap-3 min-w-[100px] snap-center cursor-pointer"
+                             @click="activeCategory = cat.name">
+                            <div class="w-24 h-24 rounded-full border-2 p-1 transition-colors"
+                                 :class="activeCategory === cat.name ? 'border-maroon' : 'border-sand'">
+                                <div class="w-full h-full rounded-full overflow-hidden bg-sand flex items-center justify-center font-serif text-maroon text-xs">
+                                    <template x-if="cat.image">
+                                        <img :src="cat.image" class="w-full h-full object-cover">
                                     </template>
-                                    <template x-if="!product.image">
-                                        <div class="w-full h-full flex items-center justify-center text-[10px] tracking-widest uppercase text-gray-400">No Image</div>
-                                    </template>
-                                    
-                                    <template x-if="product.stock <= 0">
-                                        <div class="absolute top-3 right-3 bg-white text-red-600 text-[9px] font-bold tracking-widest uppercase border border-red-200 px-2 py-1">Sold Out</div>
-                                    </template>
-                                    <template x-if="product.stock > 0 && product.stock <= 10">
-                                        <div class="absolute top-3 right-3 bg-black text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1">Low Stock</div>
+                                    <template x-if="!cat.image">
+                                        <span x-text="cat.name.charAt(0)"></span>
                                     </template>
                                 </div>
-
-                                <span class="text-[9px] font-bold tracking-widest uppercase text-gray-400 block mb-1" x-text="product.category || 'Specialty'"></span>
-                                <h4 class="font-serif text-lg tracking-wide text-[#111] mb-2" x-text="product.name"></h4>
-                                <p class="text-xs text-gray-500 font-light line-clamp-2 mb-4" x-text="product.description || 'Premium formulation handcrafted with chosen essential oils.'"></p>
                             </div>
-
-                            <div class="pt-4 border-t border-[#fafafa] flex items-center justify-between mt-auto">
-                                <span class="font-medium text-base text-[#111]">₹<span x-text="product.price"></span></span>
-                                
-                                <button @click="addToCart(product)" 
-                                        :disabled="product.stock <= 0"
-                                        class="text-[10px] font-bold tracking-widest uppercase border px-4 py-2.5 transition-colors"
-                                        :class="product.stock <= 0 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-[#111] text-[#111] hover:bg-[#111] hover:text-white'">
-                                    <span x-text="product.stock <= 0 ? 'Out of Stock' : 'Add To Cart'"></span>
-                                </button>
-                            </div>
-
+                            <span class="text-sm font-medium transition-colors" 
+                                  :class="activeCategory === cat.name ? 'text-maroon' : 'text-espresso'" x-text="cat.name"></span>
                         </div>
                     </template>
                 </div>
+            </div>
 
-                <div x-show="filteredProducts().length === 0" class="bg-white border border-[#eaeaea] p-20 text-center shadow-sm" x-cloak>
-                    <p class="text-gray-400 text-sm">No items found within this boutique gallery partition node.</p>
-                </div>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+                <template x-for="product in filteredProducts" :key="product.id">
+                    <div class="group border border-sand bg-white p-4 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
+                        <div class="relative w-full h-64 bg-sand rounded-xl overflow-hidden mb-6">
+                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div x-show="product.stock === 0" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
+                                <span class="bg-espresso text-white px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider">Out of Stock</span>
+                            </div>
+                        </div>
+                        <h4 class="font-serif text-xl font-semibold mb-2 text-maroon" x-text="product.name"></h4>
+                        <div class="flex justify-between items-center mt-4">
+                            <span class="text-lg font-medium" x-text="formatPrice(product.price)"></span>
+                            <button 
+                                @click="addToCart(product)" 
+                                :disabled="product.stock === 0"
+                                :class="product.stock === 0 ? 'opacity-50 cursor-not-allowed border-sand text-espresso/50' : 'hover:bg-maroon hover:text-white hover:border-maroon'"
+                                class="border border-maroon/30 text-maroon px-5 py-2 rounded-full transition-colors font-medium text-sm">
+                                Add to Bag
+                            </button>
+                        </div>
+                    </div>
+                </template>
             </div>
         </section>
+    </main>
 
-        <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
-            <div class="absolute inset-0 bg-[#111]/40 backdrop-blur-sm transition-opacity" @click="cartOpen = false" x-show="cartOpen" x-transition.opacity></div>
-
-            <div class="absolute inset-y-0 right-0 max-w-md w-full bg-white border-l border-[#eaeaea] shadow-2xl flex flex-col justify-between transform transition-transform"
-                 x-show="cartOpen"
-                 x-transition:enter="transform transition ease-in-out duration-300"
+    <!-- Slide-out Shopping Bag -->
+    <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
+        <div class="absolute inset-0 bg-espresso/40 backdrop-blur-sm transition-opacity" @click="cartOpen = false" x-show="cartOpen" x-transition.opacity></div>
+        
+        <div class="fixed inset-y-0 right-0 max-w-md w-full flex">
+            <div class="w-full h-full bg-cream shadow-2xl flex flex-col transform transition-transform" 
+                 x-show="cartOpen" 
+                 x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="translate-x-full"
                  x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transform transition ease-in-out duration-300"
+                 x-transition:leave="transition ease-in duration-300"
                  x-transition:leave-start="translate-x-0"
                  x-transition:leave-end="translate-x-full">
                 
-                <div class="px-6 py-6 border-b border-[#eaeaea] flex items-center justify-between">
-                    <h3 class="font-serif text-xl tracking-wider uppercase">Shopping Cart</h3>
-                    <button @click="cartOpen = false" class="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-black">Close</button>
-                </div>
-
-                <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-                    <template x-for="(item, index) in cart" :key="index">
-                        <div class="flex gap-4 p-4 border border-[#eaeaea] bg-[#fafafa]">
-                            <div class="w-16 h-16 border border-[#eaeaea] bg-white overflow-hidden shrink-0">
-                                <img :src="item.image" class="w-full h-full object-cover" x-show="item.image">
-                            </div>
-                            <div class="flex-1 flex flex-col justify-between">
-                                <div class="flex justify-between items-start">
-                                    <h5 class="text-xs font-semibold tracking-wide text-[#111] max-w-[180px]" x-text="item.name"></h5>
-                                    <button @click="removeFromCart(index)" class="text-[9px] font-bold tracking-widest text-red-500 uppercase hover:text-red-700">Remove</button>
-                                </div>
-                                <div class="flex justify-between items-center mt-2">
-                                    <div class="flex items-center border border-[#eaeaea] bg-white">
-                                        <button @click="updateQty(index, -1)" class="px-2 py-0.5 text-xs border-r border-[#eaeaea] hover:bg-gray-50">-</button>
-                                        <span class="px-3 py-0.5 text-xs font-medium text-center min-w-[24px]" x-text="item.qty"></span>
-                                        <button @click="updateQty(index, 1)" class="px-2 py-0.5 text-xs border-l border-[#eaeaea] hover:bg-gray-50">+</button>
-                                    </div>
-                                    <span class="text-xs font-semibold">₹<span x-text="item.price * item.qty"></span></span>
-                                </div>
-                            </div>
-                        </div>
-                    </template>
-
-                    <div x-show="cart.length === 0" class="text-center py-20 text-gray-400 text-sm" x-cloak>
-                        Your shopping cart container is empty.
-                    </div>
-                </div>
-
-                <div class="p-6 border-t border-[#eaeaea] bg-white space-y-4">
-                    <div class="flex justify-between items-baseline">
-                        <span class="text-xs font-semibold tracking-widest uppercase text-gray-500">Subtotal Estimation</span>
-                        <span class="font-serif text-2xl font-bold">₹<span x-text="cartTotal()">0</span></span>
-                    </div>
-                    <p class="text-[11px] text-gray-400 font-light leading-normal">Shipping, handling charges, and applicable courier routing pricing allocations computed at routing finalization node steps.</p>
-                    
-                    <button @click="checkoutViaWhatsApp()" 
-                            :disabled="cart.length === 0"
-                            class="w-full bg-[#111] text-white py-4 font-bold tracking-widest uppercase text-xs hover:bg-gray-800 transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed">
-                        Checkout via WhatsApp
+                <!-- Cart Header -->
+                <div class="px-6 py-6 border-b border-sand flex items-center justify-between bg-white">
+                    <h2 class="font-serif text-2xl font-bold text-maroon">Your Bag</h2>
+                    <button @click="cartOpen = false" class="text-espresso/50 hover:text-espresso p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                     </button>
                 </div>
 
+                <!-- Cart Items -->
+                <div class="flex-1 overflow-y-auto p-6">
+                    <template x-if="cart.length === 0">
+                        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 text-espresso/60">
+                            <svg class="w-16 h-16 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
+                            <p>Your bag is empty.</p>
+                        </div>
+                    </template>
+                    
+                    <div class="space-y-6">
+                        <template x-for="(item, index) in cart" :key="index">
+                            <div class="flex gap-4 border-b border-sand/50 pb-6">
+                                <div class="w-20 h-20 rounded-lg overflow-hidden bg-sand flex-shrink-0">
+                                    <img :src="item.product.image" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div class="flex justify-between">
+                                        <h4 class="font-medium text-maroon" x-text="item.product.name"></h4>
+                                        <button @click="removeFromCart(index)" class="text-xs text-red-400 hover:text-red-600">Remove</button>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <span class="font-medium" x-text="formatPrice(item.product.price * item.quantity)"></span>
+                                        <div class="flex items-center border border-sand rounded-lg bg-white">
+                                            <button @click="updateCartQuantity(index, -1)" class="px-3 py-1 hover:bg-sand/50 transition-colors text-espresso/70">-</button>
+                                            <span class="px-2 text-sm font-medium" x-text="item.quantity"></span>
+                                            <button @click="updateCartQuantity(index, 1)" class="px-3 py-1 hover:bg-sand/50 transition-colors text-espresso/70" :disabled="item.quantity >= item.product.stock" :class="{'opacity-50 cursor-not-allowed': item.quantity >= item.product.stock}">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Checkout Section -->
+                <div class="border-t border-sand bg-white p-6" x-show="cart.length > 0">
+                    <div class="flex justify-between text-lg font-bold text-espresso mb-6">
+                        <span>Subtotal</span>
+                        <span x-text="formatPrice(cartTotal)"></span>
+                    </div>
+
+                    <button 
+                        @click="checkout" 
+                        :disabled="cart.length === 0 || cartTotal < 200"
+                        :class="(cart.length === 0 || cartTotal < 200) ? 'opacity-50 cursor-not-allowed bg-espresso/50' : 'bg-maroon hover:bg-espresso'"
+                        class="w-full text-white py-4 rounded-xl font-medium transition-colors shadow-lg flex items-center justify-center gap-2">
+                        Checkout
+                    </button>
+                    <p x-show="cartTotal > 0 && cartTotal < 200" class="text-center text-xs text-red-500 font-bold tracking-wide mt-3" x-cloak>Minimum purchase value is â‚¹200.</p>
+                    <p x-show="cartTotal >= 200" class="text-center text-xs text-espresso/50 mt-3" x-cloak>Clicking this will confirm your order and redirect to WhatsApp.</p>
+                </div>
             </div>
         </div>
+    </div>
 
-        <div x-show="toastMessage" 
-             x-transition:enter="transition ease-out duration-300" 
-             x-transition:enter-start="opacity-0 translate-y-4" 
-             x-transition:enter-end="opacity-100 translate-y-0" 
-             x-transition:leave="transition ease-in duration-200" 
-             x-transition:leave-start="opacity-100 translate-y-0" 
-             x-transition:leave-end="opacity-0 translate-y-4" 
-             class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#111] text-white px-8 py-4 shadow-2xl flex items-center gap-3 z-50 border border-[#333]" x-cloak>
-            <span x-text="toastMessage" class="text-xs font-bold tracking-widest uppercase"></span>
-        </div>
+    <!-- Toast Notification -->
+    <div x-show="toastMessage" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 translate-y-4" 
+         x-transition:enter-end="opacity-100 translate-y-0" 
+         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave-start="opacity-100 translate-y-0" 
+         x-transition:leave-end="opacity-0 translate-y-4" 
+         class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-espresso text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-3 z-50" x-cloak>
+        <span x-text="toastMessage" class="text-sm font-medium"></span>
+    </div>
 
-    </main>
+    <script>
+        
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
-
-        const firebaseConfig = {
-            databaseURL: "https://mazinhennadatabase-default-rtdb.firebaseio.com"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-
-        window.storeApp = function() {
+        function storeApp() {
             return {
+                cartOpen: false,
                 products: [],
                 categories: [],
+                activeCategory: 'All',
                 siteLogo: null,
-                selectedCategory: '',
-                cartOpen: false,
                 cart: [],
                 toastMessage: '',
                 toastTimeout: null,
 
-                showToast(msg) {
-                    this.toastMessage = msg;
-                    if (this.toastTimeout) clearTimeout(this.toastTimeout);
-                    this.toastTimeout = setTimeout(() => { this.toastMessage = ''; }, 3000);
+                get filteredProducts() {
+                    if (this.activeCategory === 'All') {
+                        return this.products;
+                    }
+                    return this.products.filter(p => p.category === this.activeCategory);
                 },
 
                 initApp() {
-                    // Synchronize dynamic store context nodes directly from cloud baseline configuration nodes
-                    onValue(ref(db, 'products'), (snapshot) => {
-                        const data = snapshot.val();
-                        if (data) {
-                            this.products = Array.isArray(data) ? data : Object.values(data);
-                        } else {
-                            this.products = [];
+                    const savedProducts = localStorage.getItem('mazinHennaProducts');
+                    if (savedProducts) {
+                        this.products = JSON.parse(savedProducts);
+                    } else {
+                        this.products = JSON.parse(JSON.stringify(initialProducts));
+                        this.saveProducts();
+                    }
+                    
+                    this.categories = JSON.parse(localStorage.getItem('mazinHennaCategories')) || [];
+                    this.siteLogo = localStorage.getItem('mazinHennaLogo');
+                    
+                    // Listen for changes from the admin page
+                    window.addEventListener('storage', (e) => {
+                        if (e.key === 'mazinHennaProducts') {
+                            this.products = JSON.parse(e.newValue);
+                        }
+                        if (e.key === 'mazinHennaCategories') {
+                            this.categories = JSON.parse(e.newValue);
+                        }
+                        if (e.key === 'mazinHennaLogo') {
+                            this.siteLogo = e.newValue;
                         }
                     });
-
-                    onValue(ref(db, 'categories'), (snapshot) => {
-                        const data = snapshot.val();
-                        this.categories = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
-                    });
-
-                    onValue(ref(db, 'siteLogo'), (snapshot) => {
-                        this.siteLogo = snapshot.val() || null;
-                    });
-
-                    // Retain specific buyer persistence local buffer mapping cache records data structures locally
-                    const storedCart = localStorage.getItem('mazinStoreCart');
-                    if (storedCart) {
-                        this.cart = JSON.parse(storedCart);
-                    }
                 },
 
-                filteredProducts() {
-                    if (!this.selectedCategory) return this.products;
-                    return this.products.filter(p => p && p.category === this.selectedCategory);
+                saveProducts() {
+                    localStorage.setItem('mazinHennaProducts', JSON.stringify(this.products));
+                },
+
+                formatPrice(price) {
+                    return `â‚¹${Number(price).toLocaleString('en-IN')}`;
+                },
+
+                showToast(msg) {
+                    this.toastMessage = msg;
+                    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+                    this.toastTimeout = setTimeout(() => {
+                        this.toastMessage = '';
+                    }, 3000);
                 },
 
                 addToCart(product) {
-                    // Find if line item index exists
-                    const existingIndex = this.cart.findIndex(item => item.id === product.id);
+                    if (product.stock <= 0) return;
                     
-                    if (existingIndex > -1) {
-                        if (this.cart[existingIndex].qty >= product.stock) {
-                            this.showToast('Maximum available stock matched');
-                            return;
+                    // Re-fetch products just in case stock changed via admin
+                    this.initApp();
+                    const updatedProduct = this.products.find(p => p.id === product.id);
+                    if (updatedProduct.stock <= 0) {
+                        this.showToast('Product out of stock');
+                        return;
+                    }
+                    
+                    const existingItem = this.cart.find(item => item.product.id === product.id);
+                    if (existingItem) {
+                        if (existingItem.quantity < updatedProduct.stock) {
+                            existingItem.quantity++;
+                            this.showToast('Bag updated');
+                        } else {
+                            this.showToast('Maximum stock reached');
                         }
-                        this.cart[existingIndex].qty++;
                     } else {
                         this.cart.push({
-                            id: product.id,
-                            name: product.name,
-                            price: product.price,
-                            image: product.image,
-                            qty: 1,
-                            maxStock: product.stock
+                            product: { ...updatedProduct }, // copy
+                            quantity: 1
                         });
+                        this.showToast('Added to bag');
                     }
-                    this.syncCart();
-                    this.showToast('Added to cart');
+                    this.cartOpen = true;
                 },
 
                 removeFromCart(index) {
                     this.cart.splice(index, 1);
-                    this.syncCart();
-                    this.showToast('Item removed');
                 },
 
-                updateQty(index, change) {
+                updateCartQuantity(index, delta) {
                     const item = this.cart[index];
-                    const targetQty = item.qty + change;
+                    const productInStock = this.products.find(p => p.id === item.product.id).stock;
                     
-                    if (targetQty <= 0) {
-                        this.removeFromCart(index);
-                        return;
+                    if (delta === 1 && item.quantity < productInStock) {
+                        item.quantity++;
+                    } else if (delta === -1 && item.quantity > 1) {
+                        item.quantity--;
                     }
-                    
-                    if (targetQty > item.maxStock) {
-                        this.showToast('Exceeds current stock limits');
-                        return;
-                    }
-                    
-                    item.qty = targetQty;
-                    this.syncCart();
                 },
 
-                cartCount() {
-                    return this.cart.reduce((sum, item) => sum + item.qty, 0);
+                get cartTotal() {
+                    return this.cart.reduce((total, item) => total + (item.product.price * item.quantity), 0);
+                },
+                
+                get cartTotalItems() {
+                    return this.cart.reduce((total, item) => total + item.quantity, 0);
                 },
 
-                cartTotal() {
-                    return this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
-                },
+                checkout() {
+                    if (this.cart.length === 0 || this.cartTotal < 200) return;
 
-                syncCart() {
-                    localStorage.setItem('mazinStoreCart', JSON.stringify(this.cart));
-                },
-
-                checkoutViaWhatsApp() {
-                    if (this.cart.length === 0) return;
-
-                    // Formats order string beautifully for the enterprise delivery routing agent
-                    let message = `*NEW ORDER - MAZIN HENNA STORE*\n`;
-                    message += `=========================\n\n`;
-                    
-                    this.cart.forEach((item, idx) => {
-                        message += `${idx + 1}. *${item.name}*\n`;
-                        message += `   Qty: ${item.qty} x ₹${item.price} = *₹${item.price * item.qty}*\n\n`;
+                    // Deduct stock
+                    this.cart.forEach(cartItem => {
+                        const prodIndex = this.products.findIndex(p => p.id === cartItem.product.id);
+                        if (prodIndex !== -1) {
+                            this.products[prodIndex].stock -= cartItem.quantity;
+                            if (this.products[prodIndex].stock < 0) this.products[prodIndex].stock = 0;
+                        }
                     });
                     
-                    message += `=========================\n`;
-                    message += `*Total Order Value: ₹${this.cartTotal()}*\n\n`;
-                    message += `Please confirm my order item fulfillment requirements and share shipping details steps.`;
+                    this.saveProducts();
 
-                    const encodedMessage = encodeURIComponent(message);
-                    // Replace with your actual WhatsApp line business contact node string identifier if needed
-                    const whatsappUrl = `https://wa.me/919000000000?text=${encodedMessage}`;
+                    // Build WhatsApp Message
+                    let message = `*NEW ORDER: MAZIN HENNA* %0A%0A`;
+                    message += `*Order Items:*%0A`;
                     
-                    window.open(whatsappUrl, '_blank');
+                    this.cart.forEach(item => {
+                        message += `- ${item.quantity}x ${item.product.name} (â‚¹${item.product.price * item.quantity})%0A`;
+                    });
+                    
+                    message += `%0A*Subtotal:* â‚¹${this.cartTotal}%0A`;
+                    message += `Please confirm my order.`;
+
+                    const phoneNumber = '7592083435'; 
+                    const waUrl = `https://wa.me/${phoneNumber}?text=${message}`;
+                    
+                    // Clear cart
+                    this.cart = [];
+                    this.cartOpen = false;
+                    
+                    this.showToast('Order placed successfully!');
+                    
+                    // Open WhatsApp
+                    window.open(waUrl, '_blank');
                 }
             }
         }
