@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mazin Henna // premium Henna Store</title>
+    <title>Mazin Henna | Premium Henna Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -205,7 +205,7 @@
                         class="w-full text-white py-4 rounded-xl font-medium transition-colors shadow-lg flex items-center justify-center gap-2">
                         Checkout
                     </button>
-                    <p x-show="cartTotal > 0 && cartTotal < 200" class="text-center text-xs text-red-500 font-bold tracking-wide mt-3" x-cloak>Minimum purchase value is â‚¹200.</p>
+                    <p x-show="cartTotal > 0 && cartTotal < 200" class="text-center text-xs text-red-500 font-bold tracking-wide mt-3" x-cloak>Minimum purchase value is ₹200.</p>
                     <p x-show="cartTotal >= 200" class="text-center text-xs text-espresso/50 mt-3" x-cloak>Clicking this will confirm your order and redirect to WhatsApp.</p>
                 </div>
             </div>
@@ -304,7 +304,7 @@
                 },
 
                 formatPrice(price) {
-                    return `â‚¹${Number(price).toLocaleString('en-IN')}`;
+                    return `₹${Number(price).toLocaleString('en-IN')}`;
                 },
 
                 showToast(msg) {
@@ -387,10 +387,10 @@
                     message += `*Order Items:*%0A`;
                     
                     this.cart.forEach(item => {
-                        message += `- ${item.quantity}x ${item.product.name} (â‚¹${item.product.price * item.quantity})%0A`;
+                        message += `- ${item.quantity}x ${item.product.name} (₹${item.product.price * item.quantity})%0A`;
                     });
                     
-                    message += `%0A*Subtotal:* â‚¹${this.cartTotal}%0A`;
+                    message += `%0A*Subtotal:* ₹${this.cartTotal}%0A`;
                     message += `Please confirm my order.`;
 
                     const phoneNumber = '7592083435'; 
