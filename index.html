@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mazin Henna | Premium Organic Henna Store</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        /* Smooth custom scrollbar for luxury feel */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: #fafafa; }
+        ::-webkit-scrollbar-thumb { background: #111; }
+    </style>
+</head>
+<body class="bg-[#fafafa] text-[#111] font-sans antialiased selection:bg-black selection:text-white relative min-h-screen pb-24" x-data="storeApp()" x-init="initApp()">
+
+    <header class="bg-white border-b border-[#eaeaea] w-full fixed top-0 z-40">
+        <div class="max-w-[1400px] mx-auto px-6 sm:px-8 h-24 flex items-center justify-between">
+            
+            <div class="flex items-center gap-3 w-1/4">
+                <template x-if="siteLogo">
+                    <img :src="siteLogo" class="w-12 h-12 rounded-full object-cover border border-[#eaeaea]">
+                </template>
+                <span class="font-serif text-lg tracking-widest uppercase hidden lg:block">Mazin Henna</span>
+            </div>
+
+            <div class="flex-1 text-center">
+                <a href="index.html" class="font-serif text-xl sm:text-2xl tracking-[0.2em] uppercase block">The Boutique</a>
+            </div>
+
+            <div class="w-1/4 flex justify-end items-center gap-4 sm:gap-6">
+                <a href="admin.html" class="text-[10px] tracking-widest uppercase text-gray-400 hover:text-black transition-colors hidden sm:inline-block">Admin</a>
+                
+                <button @click="cartOpen = true" class="relative group flex items-center gap-2 border border-[#111] px-4 py-2 hover:bg-[#111] hover:text-white transition-colors">
+                    <span class="text-[10px] font-bold tracking-widest uppercase">Cart</span>
+                    <span class="bg-[#111] text-white text-[9px] font-bold w-4 h-4 rounded-full flex items-center justify-center group-hover:bg-white group-hover:text-[#111] transition-colors" x-text="cartCount()">0</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <main class="pt-24">
+        
+        <section class="max-w-[1400px] mx-auto px-6 py-12 sm:py-20 border-b border-[#eaeaea]">
+            <div class="text-center max-w-2xl mx-auto space-y-4">
+                <p class="text-[10px] font-semibold tracking-[0.3em] uppercase text-gray-400">Pure, Fresh & Handcrafted</p>
+                <h2 class="font-serif text-4xl sm:text-6xl tracking-wide uppercase">Organic Elegance</h2>
+                <p class="text-sm text-gray-500 font-light leading-relaxed">Experience rich, dark stains with premium cones formulated from professional-grade botanical ingredients. Prepared fresh for every order.</p>
+            </div>
+        </section>
+
+        <section class="max-w-[1400px] mx-auto px-6 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8">
+            
+            <aside class="lg:col-span-3 space-y-6">
+                <div class="sticky top-32 bg-white border border-[#eaeaea] p-6 sm:p-8 shadow-sm">
+                    <h3 class="font-serif text-lg tracking-wider uppercase border-b border-[#eaeaea] pb-4 mb-4">Collections</h3>
+                    <ul class="space-y-3">
+                        <li>
+                            <button @click="selectedCategory = ''" 
+                                    class="w-full text-left text-xs tracking-widest uppercase py-1 transition-colors font-medium flex items-center justify-between"
+                                    :class="selectedCategory === '' ? 'text-black font-bold pl-2 border-l-2 border-black' : 'text-gray-400 hover:text-black'">
+                                <span>All Creations</span>
+                                <span class="text-[10px]" x-text="products.length"></span>
+                            </button>
+                        </li>
+                        <template x-for="cat in categories" :key="cat.name">
+                            <li>
+                                <button @click="selectedCategory = cat.name" 
+                                        class="w-full text-left text-xs tracking-widest uppercase py-1 transition-colors font-medium flex items-center justify-between"
+                                        :class="selectedCategory === cat.name ? 'text-black font-bold pl-2 border-l-2 border-black' : 'text-gray-400 hover:text-black'">
+                                    <span x-text="cat.name"></span>
+                                    <span class="text-[10px]" x-text="products.filter(p => p.category === cat.name).length"></span>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </aside>
+
+            <div class="lg:col-span-9">
+                <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
+                    <template x-for="product in filteredProducts()" :key="product.id">
+                        <div class="bg-white border border-[#eaeaea] p-6 shadow-sm flex flex-col justify-between group hover:shadow-md transition-shadow">
+                            
+                            <div>
+                                <div class="w-full aspect-square border border-[#eaeaea] bg-[#fafafa] overflow-hidden relative mb-6">
+                                    <template x-if="product.image">
+                                        <img :src="product.image" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                                    </template>
+                                    <template x-if="!product.image">
+                                        <div class="w-full h-full flex items-center justify-center text-[10px] tracking-widest uppercase text-gray-400">No Image</div>
+                                    </template>
+                                    
+                                    <template x-if="product.stock <= 0">
+                                        <div class="absolute top-3 right-3 bg-white text-red-600 text-[9px] font-bold tracking-widest uppercase border border-red-200 px-2 py-1">Sold Out</div>
+                                    </template>
+                                    <template x-if="product.stock > 0 && product.stock <= 10">
+                                        <div class="absolute top-3 right-3 bg-black text-white text-[9px] font-bold tracking-widest uppercase px-2 py-1">Low Stock</div>
+                                    </template>
+                                </div>
+
+                                <span class="text-[9px] font-bold tracking-widest uppercase text-gray-400 block mb-1" x-text="product.category || 'Specialty'"></span>
+                                <h4 class="font-serif text-lg tracking-wide text-[#111] mb-2" x-text="product.name"></h4>
+                                <p class="text-xs text-gray-500 font-light line-clamp-2 mb-4" x-text="product.description || 'Premium formulation handcrafted with chosen essential oils.'"></p>
+                            </div>
+
+                            <div class="pt-4 border-t border-[#fafafa] flex items-center justify-between mt-auto">
+                                <span class="font-medium text-base text-[#111]">₹<span x-text="product.price"></span></span>
+                                
+                                <button @click="addToCart(product)" 
+                                        :disabled="product.stock <= 0"
+                                        class="text-[10px] font-bold tracking-widest uppercase border px-4 py-2.5 transition-colors"
+                                        :class="product.stock <= 0 ? 'border-gray-200 text-gray-300 cursor-not-allowed' : 'border-[#111] text-[#111] hover:bg-[#111] hover:text-white'">
+                                    <span x-text="product.stock <= 0 ? 'Out of Stock' : 'Add To Cart'"></span>
+                                </button>
+                            </div>
+
+                        </div>
+                    </template>
+                </div>
+
+                <div x-show="filteredProducts().length === 0" class="bg-white border border-[#eaeaea] p-20 text-center shadow-sm" x-cloak>
+                    <p class="text-gray-400 text-sm">No items found within this boutique gallery partition node.</p>
+                </div>
+            </div>
+        </section>
+
+        <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
+            <div class="absolute inset-0 bg-[#111]/40 backdrop-blur-sm transition-opacity" @click="cartOpen = false" x-show="cartOpen" x-transition.opacity></div>
+
+            <div class="absolute inset-y-0 right-0 max-w-md w-full bg-white border-l border-[#eaeaea] shadow-2xl flex flex-col justify-between transform transition-transform"
+                 x-show="cartOpen"
+                 x-transition:enter="transform transition ease-in-out duration-300"
+                 x-transition:enter-start="translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transform transition ease-in-out duration-300"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="translate-x-full">
+                
+                <div class="px-6 py-6 border-b border-[#eaeaea] flex items-center justify-between">
+                    <h3 class="font-serif text-xl tracking-wider uppercase">Shopping Cart</h3>
+                    <button @click="cartOpen = false" class="text-xs font-bold tracking-widest uppercase text-gray-400 hover:text-black">Close</button>
+                </div>
+
+                <div class="flex-1 overflow-y-auto px-6 py-4 space-y-4">
+                    <template x-for="(item, index) in cart" :key="index">
+                        <div class="flex gap-4 p-4 border border-[#eaeaea] bg-[#fafafa]">
+                            <div class="w-16 h-16 border border-[#eaeaea] bg-white overflow-hidden shrink-0">
+                                <img :src="item.image" class="w-full h-full object-cover" x-show="item.image">
+                            </div>
+                            <div class="flex-1 flex flex-col justify-between">
+                                <div class="flex justify-between items-start">
+                                    <h5 class="text-xs font-semibold tracking-wide text-[#111] max-w-[180px]" x-text="item.name"></h5>
+                                    <button @click="removeFromCart(index)" class="text-[9px] font-bold tracking-widest text-red-500 uppercase hover:text-red-700">Remove</button>
+                                </div>
+                                <div class="flex justify-between items-center mt-2">
+                                    <div class="flex items-center border border-[#eaeaea] bg-white">
+                                        <button @click="updateQty(index, -1)" class="px-2 py-0.5 text-xs border-r border-[#eaeaea] hover:bg-gray-50">-</button>
+                                        <span class="px-3 py-0.5 text-xs font-medium text-center min-w-[24px]" x-text="item.qty"></span>
+                                        <button @click="updateQty(index, 1)" class="px-2 py-0.5 text-xs border-l border-[#eaeaea] hover:bg-gray-50">+</button>
+                                    </div>
+                                    <span class="text-xs font-semibold">₹<span x-text="item.price * item.qty"></span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </template>
+
+                    <div x-show="cart.length === 0" class="text-center py-20 text-gray-400 text-sm" x-cloak>
+                        Your shopping cart container is empty.
+                    </div>
+                </div>
+
+                <div class="p-6 border-t border-[#eaeaea] bg-white space-y-4">
+                    <div class="flex justify-between items-baseline">
+                        <span class="text-xs font-semibold tracking-widest uppercase text-gray-500">Subtotal Estimation</span>
+                        <span class="font-serif text-2xl font-bold">₹<span x-text="cartTotal()">0</span></span>
+                    </div>
+                    <p class="text-[11px] text-gray-400 font-light leading-normal">Shipping, handling charges, and applicable courier routing pricing allocations computed at routing finalization node steps.</p>
+                    
+                    <button @click="checkoutViaWhatsApp()" 
+                            :disabled="cart.length === 0"
+                            class="w-full bg-[#111] text-white py-4 font-bold tracking-widest uppercase text-xs hover:bg-gray-800 transition-colors disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed">
+                        Checkout via WhatsApp
+                    </button>
+                </div>
+
+            </div>
+        </div>
+
+        <div x-show="toastMessage" 
+             x-transition:enter="transition ease-out duration-300" 
+             x-transition:enter-start="opacity-0 translate-y-4" 
+             x-transition:enter-end="opacity-100 translate-y-0" 
+             x-transition:leave="transition ease-in duration-200" 
+             x-transition:leave-start="opacity-100 translate-y-0" 
+             x-transition:leave-end="opacity-0 translate-y-4" 
+             class="fixed bottom-8 left-1/2 -translate-x-1/2 bg-[#111] text-white px-8 py-4 shadow-2xl flex items-center gap-3 z-50 border border-[#333]" x-cloak>
+            <span x-text="toastMessage" class="text-xs font-bold tracking-widest uppercase"></span>
+        </div>
+
+    </main>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+        import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+
+        const firebaseConfig = {
+            databaseURL: "https://mazinhennadatabase-default-rtdb.firebaseio.com"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        window.storeApp = function() {
+            return {
+                products: [],
+                categories: [],
+                siteLogo: null,
+                selectedCategory: '',
+                cartOpen: false,
+                cart: [],
+                toastMessage: '',
+                toastTimeout: null,
+
+                showToast(msg) {
+                    this.toastMessage = msg;
+                    if (this.toastTimeout) clearTimeout(this.toastTimeout);
+                    this.toastTimeout = setTimeout(() => { this.toastMessage = ''; }, 3000);
+                },
+
+                initApp() {
+                    // Synchronize dynamic store context nodes directly from cloud baseline configuration nodes
+                    onValue(ref(db, 'products'), (snapshot) => {
+                        const data = snapshot.val();
+                        if (data) {
+                            this.products = Array.isArray(data) ? data : Object.values(data);
+                        } else {
+                            this.products = [];
+                        }
+                    });
+
+                    onValue(ref(db, 'categories'), (snapshot) => {
+                        const data = snapshot.val();
+                        this.categories = data ? (Array.isArray(data) ? data : Object.values(data)) : [];
+                    });
+
+                    onValue(ref(db, 'siteLogo'), (snapshot) => {
+                        this.siteLogo = snapshot.val() || null;
+                    });
+
+                    // Retain specific buyer persistence local buffer mapping cache records data structures locally
+                    const storedCart = localStorage.getItem('mazinStoreCart');
+                    if (storedCart) {
+                        this.cart = JSON.parse(storedCart);
+                    }
+                },
+
+                filteredProducts() {
+                    if (!this.selectedCategory) return this.products;
+                    return this.products.filter(p => p && p.category === this.selectedCategory);
+                },
+
+                addToCart(product) {
+                    // Find if line item index exists
+                    const existingIndex = this.cart.findIndex(item => item.id === product.id);
+                    
+                    if (existingIndex > -1) {
+                        if (this.cart[existingIndex].qty >= product.stock) {
+                            this.showToast('Maximum available stock matched');
+                            return;
+                        }
+                        this.cart[existingIndex].qty++;
+                    } else {
+                        this.cart.push({
+                            id: product.id,
+                            name: product.name,
+                            price: product.price,
+                            image: product.image,
+                            qty: 1,
+                            maxStock: product.stock
+                        });
+                    }
+                    this.syncCart();
+                    this.showToast('Added to cart');
+                },
+
+                removeFromCart(index) {
+                    this.cart.splice(index, 1);
+                    this.syncCart();
+                    this.showToast('Item removed');
+                },
+
+                updateQty(index, change) {
+                    const item = this.cart[index];
+                    const targetQty = item.qty + change;
+                    
+                    if (targetQty <= 0) {
+                        this.removeFromCart(index);
+                        return;
+                    }
+                    
+                    if (targetQty > item.maxStock) {
+                        this.showToast('Exceeds current stock limits');
+                        return;
+                    }
+                    
+                    item.qty = targetQty;
+                    this.syncCart();
+                },
+
+                cartCount() {
+                    return this.cart.reduce((sum, item) => sum + item.qty, 0);
+                },
+
+                cartTotal() {
+                    return this.cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+                },
+
+                syncCart() {
+                    localStorage.setItem('mazinStoreCart', JSON.stringify(this.cart));
+                },
+
+                checkoutViaWhatsApp() {
+                    if (this.cart.length === 0) return;
+
+                    // Formats order string beautifully for the enterprise delivery routing agent
+                    let message = `*NEW ORDER - MAZIN HENNA STORE*\n`;
+                    message += `=========================\n\n`;
+                    
+                    this.cart.forEach((item, idx) => {
+                        message += `${idx + 1}. *${item.name}*\n`;
+                        message += `   Qty: ${item.qty} x ₹${item.price} = *₹${item.price * item.qty}*\n\n`;
+                    });
+                    
+                    message += `=========================\n`;
+                    message += `*Total Order Value: ₹${this.cartTotal()}*\n\n`;
+                    message += `Please confirm my order item fulfillment requirements and share shipping details steps.`;
+
+                    const encodedMessage = encodeURIComponent(message);
+                    // Replace with your actual WhatsApp line business contact node string identifier if needed
+                    const whatsappUrl = `https://wa.me/919000000000?text=${encodedMessage}`;
+                    
+                    window.open(whatsappUrl, '_blank');
+                }
+            }
+        }
+    </script>
+</body>
+</html>
