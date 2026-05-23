@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mazin Henna Design</title>
+    <title>Mazin Henna // premium Henna Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
@@ -225,7 +225,25 @@
     </div>
 
     <script>
-        
+        const DB_URL = 'https://mazinhennadatabase-default-rtdb.firebaseio.com';
+
+        async function fbGet(path) {
+            try {
+                const res = await fetch(`${DB_URL}/${path}.json`);
+                return await res.json();
+            } catch(e) { console.error('Firebase read error:', e); return null; }
+        }
+
+        async function fbSet(path, data) {
+            try {
+                await fetch(`${DB_URL}/${path}.json`, {
+                    method: 'PUT',
+                    body: JSON.stringify(data),
+                    headers: { 'Content-Type': 'application/json' }
+                });
+            } catch(e) { console.error('Firebase write error:', e); }
+        }
+
 
         function storeApp() {
             return {
@@ -245,34 +263,44 @@
                     return this.products.filter(p => p.category === this.activeCategory);
                 },
 
-                initApp() {
-                    const savedProducts = localStorage.getItem('mazinHennaProducts');
-                    if (savedProducts) {
-                        this.products = JSON.parse(savedProducts);
-                    } else {
-                        this.products = JSON.parse(JSON.stringify(initialProducts));
-                        this.saveProducts();
-                    }
-                    
-                    this.categories = JSON.parse(localStorage.getItem('mazinHennaCategories')) || [];
-                    this.siteLogo = localStorage.getItem('mazinHennaLogo');
-                    
-                    // Listen for changes from the admin page
-                    window.addEventListener('storage', (e) => {
-                        if (e.key === 'mazinHennaProducts') {
-                            this.products = JSON.parse(e.newValue);
+                async initApp() {
+                    const products = await fbGet('products');
+                    this.products = Array.isArray(products) ? products : (products ? Object.values(products) : []);
+
+                    const categories = await fbGet('categories');
+                    this.categories = Array.isArray(categories) ? categories : (categories ? Object.values(categories) : []);
+
+                    const logo = await fbGet('logo');
+                    this.siteLogo = logo || null;
+
+                    // Real-time: auto-update when admin changes products
+                    const esProducts = new EventSource(`${DB_URL}/products.json?accept=text/event-stream`);
+                    esProducts.addEventListener('put', (e) => {
+                        const data = JSON.parse(e.data);
+                        if (data.data) {
+                            this.products = Array.isArray(data.data) ? data.data : Object.values(data.data);
                         }
-                        if (e.key === 'mazinHennaCategories') {
-                            this.categories = JSON.parse(e.newValue);
+                    });
+
+                    // Real-time: auto-update when admin changes categories
+                    const esCats = new EventSource(`${DB_URL}/categories.json?accept=text/event-stream`);
+                    esCats.addEventListener('put', (e) => {
+                        const data = JSON.parse(e.data);
+                        if (data.data) {
+                            this.categories = Array.isArray(data.data) ? data.data : Object.values(data.data);
                         }
-                        if (e.key === 'mazinHennaLogo') {
-                            this.siteLogo = e.newValue;
-                        }
+                    });
+
+                    // Real-time: logo updates
+                    const esLogo = new EventSource(`${DB_URL}/logo.json?accept=text/event-stream`);
+                    esLogo.addEventListener('put', (e) => {
+                        const data = JSON.parse(e.data);
+                        this.siteLogo = data.data || null;
                     });
                 },
 
-                saveProducts() {
-                    localStorage.setItem('mazinHennaProducts', JSON.stringify(this.products));
+                async saveProducts() {
+                    await fbSet('products', this.products);
                 },
 
                 formatPrice(price) {
@@ -287,17 +315,18 @@
                     }, 3000);
                 },
 
-                addToCart(product) {
+                async addToCart(product) {
                     if (product.stock <= 0) return;
-                    
-                    // Re-fetch products just in case stock changed via admin
-                    this.initApp();
+
+                    // Re-fetch latest stock from Firebase
+                    const products = await fbGet('products');
+                    this.products = Array.isArray(products) ? products : (products ? Object.values(products) : []);
                     const updatedProduct = this.products.find(p => p.id === product.id);
-                    if (updatedProduct.stock <= 0) {
+                    if (!updatedProduct || updatedProduct.stock <= 0) {
                         this.showToast('Product out of stock');
                         return;
                     }
-                    
+
                     const existingItem = this.cart.find(item => item.product.id === product.id);
                     if (existingItem) {
                         if (existingItem.quantity < updatedProduct.stock) {
@@ -308,7 +337,7 @@
                         }
                     } else {
                         this.cart.push({
-                            product: { ...updatedProduct }, // copy
+                            product: { ...updatedProduct },
                             quantity: 1
                         });
                         this.showToast('Added to bag');
@@ -339,7 +368,7 @@
                     return this.cart.reduce((total, item) => total + item.quantity, 0);
                 },
 
-                checkout() {
+                async checkout() {
                     if (this.cart.length === 0 || this.cartTotal < 200) return;
 
                     // Deduct stock
@@ -350,8 +379,8 @@
                             if (this.products[prodIndex].stock < 0) this.products[prodIndex].stock = 0;
                         }
                     });
-                    
-                    this.saveProducts();
+
+                    await this.saveProducts();
 
                     // Build WhatsApp Message
                     let message = `*NEW ORDER: MAZIN HENNA* %0A%0A`;
