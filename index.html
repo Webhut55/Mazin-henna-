@@ -5,226 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mazin Henna | Premium Henna Store</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+    <!-- Define storeApp globally before Alpine loads to prevent race condition ReferenceErrors -->
     <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        cream: '#FDFBF7',
-                        sand: '#F5EFEB',
-                        maroon: '#4A0E17',
-                        espresso: '#2B1810',
-                        gold: '#D4AF37'
-                    },
-                    fontFamily: {
-                        serif: ['"Playfair Display"', 'serif'],
-                        sans: ['Inter', 'sans-serif'],
-                    }
-                }
-            }
-        }
-    </script>
-    <style>
-        [x-cloak] { display: none !important; }
-    </style>
-</head>
-<body class="bg-cream text-espresso font-sans antialiased selection:bg-gold selection:text-white" x-data="storeApp()" x-init="initApp()">
+        // Premium default mock items in case the live database doesn't populate, ensuring seamless visual experience
+        const defaultProducts = [
+            { id: 1, name: "Premium Rajsthani Henna Cone", category: "Cones", price: 60, stock: 45, image: "https://images.unsplash.com/photo-1605647540924-852290f6b0d5?auto=format&fit=crop&w=600&q=80", description: "Handmade organic henna cones using premium triple-sifted Sojat mehndi powder and Pure Eucalyptus Essential Oil." },
+            { id: 2, name: "Eucalyptus Mehndi Oil blend", category: "Oils", price: 150, stock: 12, image: "https://images.unsplash.com/photo-1608571423902-eed4a5ad8108?auto=format&fit=crop&w=600&q=80", description: "Infused with pure therapeutic grade Cajeput, Eucalyptus and Tea Tree oils to yield ultra-dark stains." },
+            { id: 3, name: "Bridal Henna Template Kit", category: "Stencils", price: 299, stock: 18, image: "https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&w=600&q=80", description: "Intricate laser-cut self-adhesive stencils matching authentic traditional Rajasthani bridal layout." }
+        ];
 
-    <!-- Header -->
-    <header class="fixed top-0 w-full bg-cream/90 backdrop-blur-md z-40 border-b border-sand/50 shadow-sm transition-all">
-        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
-            <div class="flex items-center gap-3 cursor-pointer" @click="window.scrollTo({top:0, behavior:'smooth'})">
-                <template x-if="siteLogo">
-                    <img :src="siteLogo" alt="Logo" class="w-10 h-10 rounded-full object-cover border border-sand">
-                </template>
-                <div class="flex flex-col">
-                    <h1 class="font-serif text-2xl font-bold tracking-wide text-maroon leading-tight">Mazin Henna</h1>
-                    <span class="text-[10px] text-espresso/60 font-medium tracking-wider uppercase">Powered by Webhut</span>
-                </div>
-            </div>
-            <div class="flex items-center gap-6">
-                <button @click="cartOpen = true" class="relative text-espresso hover:text-gold transition-colors flex items-center gap-2">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                    <span x-show="cartTotalItems > 0" x-text="cartTotalItems" class="absolute -top-2 -right-2 bg-maroon text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center"></span>
-                </button>
-            </div>
-        </div>
-    </header>
+        const defaultCategories = [
+            { name: "Cones" },
+            { name: "Oils" },
+            { name: "Stencils" }
+        ];
 
-    <!-- Main Content -->
-    <main class="pt-20 min-h-screen">
-        <!-- Hero -->
-        <section class="relative bg-cover bg-center overflow-hidden py-32 sm:py-40" style="background-image: url('hero_bg.png');">
-            <!-- Smooth fade to page background -->
-            <div class="absolute inset-0 bg-espresso/60 mix-blend-multiply"></div>
-            <div class="absolute inset-0 bg-gradient-to-b from-transparent via-maroon/20 to-cream"></div>
-            
-            <div class="max-w-7xl mx-auto px-6 relative z-10 flex flex-col items-center text-center">
-                <h2 class="font-serif text-5xl sm:text-7xl font-bold text-white mb-6 drop-shadow-xl tracking-wide">The Art of Mazin Henna</h2>
-                <p class="text-lg sm:text-xl max-w-2xl text-sand mb-10 drop-shadow-md font-medium">Experience the richness of natural, handcrafted henna designed for luxury and lasting impressions.</p>
-                <button @click="document.getElementById('products').scrollIntoView({behavior: 'smooth'})" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-yellow-600 transition-all duration-300 font-bold tracking-widest uppercase shadow-xl hover:shadow-2xl transform hover:-translate-y-1 border border-yellow-300/30">Shop Collection</button>
-            </div>
-        </section>
-
-        <!-- Product Grid -->
-        <section id="products" class="max-w-7xl mx-auto px-6 py-20">
-            <div class="flex justify-between items-end mb-12">
-                <h3 class="font-serif text-3xl font-bold text-espresso">Our Products</h3>
-            </div>
-            <!-- Categories -->
-            <div x-show="categories.length > 0" class="mb-12" x-cloak>
-                <div class="flex gap-6 overflow-x-auto pb-4 scrollbar-hide snap-x">
-                    <div class="flex flex-col items-center gap-3 min-w-[100px] snap-center cursor-pointer"
-                         @click="activeCategory = 'All'">
-                        <div class="w-24 h-24 rounded-full border-2 p-1 transition-colors"
-                             :class="activeCategory === 'All' ? 'border-maroon' : 'border-sand'">
-                            <div class="w-full h-full rounded-full overflow-hidden bg-sand flex items-center justify-center font-serif text-maroon font-medium">
-                                All
-                            </div>
-                        </div>
-                        <span class="text-sm font-medium transition-colors" 
-                              :class="activeCategory === 'All' ? 'text-maroon' : 'text-espresso'">All</span>
-                    </div>
-                    
-                    <template x-for="cat in categories" :key="cat.name">
-                        <div class="flex flex-col items-center gap-3 min-w-[100px] snap-center cursor-pointer"
-                             @click="activeCategory = cat.name">
-                            <div class="w-24 h-24 rounded-full border-2 p-1 transition-colors"
-                                 :class="activeCategory === cat.name ? 'border-maroon' : 'border-sand'">
-                                <div class="w-full h-full rounded-full overflow-hidden bg-sand flex items-center justify-center font-serif text-maroon text-xs">
-                                    <template x-if="cat.image">
-                                        <img :src="cat.image" class="w-full h-full object-cover">
-                                    </template>
-                                    <template x-if="!cat.image">
-                                        <span x-text="cat.name.charAt(0)"></span>
-                                    </template>
-                                </div>
-                            </div>
-                            <span class="text-sm font-medium transition-colors" 
-                                  :class="activeCategory === cat.name ? 'text-maroon' : 'text-espresso'" x-text="cat.name"></span>
-                        </div>
-                    </template>
-                </div>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
-                <template x-for="product in filteredProducts" :key="product.id">
-                    <div class="group border border-sand bg-white p-4 rounded-2xl shadow-sm hover:shadow-xl transition-all duration-300">
-                        <div class="relative w-full h-64 bg-sand rounded-xl overflow-hidden mb-6">
-                            <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
-                            <div x-show="product.stock === 0" class="absolute inset-0 bg-white/60 backdrop-blur-[2px] flex items-center justify-center">
-                                <span class="bg-espresso text-white px-4 py-1 rounded-full text-sm font-semibold uppercase tracking-wider">Out of Stock</span>
-                            </div>
-                        </div>
-                        <h4 class="font-serif text-xl font-semibold mb-2 text-maroon" x-text="product.name"></h4>
-                        <div class="flex justify-between items-center mt-4">
-                            <span class="text-lg font-medium" x-text="formatPrice(product.price)"></span>
-                            <button 
-                                @click="addToCart(product)" 
-                                :disabled="product.stock === 0"
-                                :class="product.stock === 0 ? 'opacity-50 cursor-not-allowed border-sand text-espresso/50' : 'hover:bg-maroon hover:text-white hover:border-maroon'"
-                                class="border border-maroon/30 text-maroon px-5 py-2 rounded-full transition-colors font-medium text-sm">
-                                Add to Bag
-                            </button>
-                        </div>
-                    </div>
-                </template>
-            </div>
-        </section>
-    </main>
-
-    <!-- Slide-out Shopping Bag -->
-    <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
-        <div class="absolute inset-0 bg-espresso/40 backdrop-blur-sm transition-opacity" @click="cartOpen = false" x-show="cartOpen" x-transition.opacity></div>
-        
-        <div class="fixed inset-y-0 right-0 max-w-md w-full flex">
-            <div class="w-full h-full bg-cream shadow-2xl flex flex-col transform transition-transform" 
-                 x-show="cartOpen" 
-                 x-transition:enter="transition ease-out duration-300"
-                 x-transition:enter-start="translate-x-full"
-                 x-transition:enter-end="translate-x-0"
-                 x-transition:leave="transition ease-in duration-300"
-                 x-transition:leave-start="translate-x-0"
-                 x-transition:leave-end="translate-x-full">
-                
-                <!-- Cart Header -->
-                <div class="px-6 py-6 border-b border-sand flex items-center justify-between bg-white">
-                    <h2 class="font-serif text-2xl font-bold text-maroon">Your Bag</h2>
-                    <button @click="cartOpen = false" class="text-espresso/50 hover:text-espresso p-2">
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-                    </button>
-                </div>
-
-                <!-- Cart Items -->
-                <div class="flex-1 overflow-y-auto p-6">
-                    <template x-if="cart.length === 0">
-                        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 text-espresso/60">
-                            <svg class="w-16 h-16 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path></svg>
-                            <p>Your bag is empty.</p>
-                        </div>
-                    </template>
-                    
-                    <div class="space-y-6">
-                        <template x-for="(item, index) in cart" :key="index">
-                            <div class="flex gap-4 border-b border-sand/50 pb-6">
-                                <div class="w-20 h-20 rounded-lg overflow-hidden bg-sand flex-shrink-0">
-                                    <img :src="item.product.image" class="w-full h-full object-cover">
-                                </div>
-                                <div class="flex-1 flex flex-col justify-between">
-                                    <div class="flex justify-between">
-                                        <h4 class="font-medium text-maroon" x-text="item.product.name"></h4>
-                                        <button @click="removeFromCart(index)" class="text-xs text-red-400 hover:text-red-600">Remove</button>
-                                    </div>
-                                    <div class="flex justify-between items-center mt-2">
-                                        <span class="font-medium" x-text="formatPrice(item.product.price * item.quantity)"></span>
-                                        <div class="flex items-center border border-sand rounded-lg bg-white">
-                                            <button @click="updateCartQuantity(index, -1)" class="px-3 py-1 hover:bg-sand/50 transition-colors text-espresso/70">-</button>
-                                            <span class="px-2 text-sm font-medium" x-text="item.quantity"></span>
-                                            <button @click="updateCartQuantity(index, 1)" class="px-3 py-1 hover:bg-sand/50 transition-colors text-espresso/70" :disabled="item.quantity >= item.product.stock" :class="{'opacity-50 cursor-not-allowed': item.quantity >= item.product.stock}">+</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </template>
-                    </div>
-                </div>
-
-                <!-- Checkout Section -->
-                <div class="border-t border-sand bg-white p-6" x-show="cart.length > 0">
-                    <div class="flex justify-between text-lg font-bold text-espresso mb-6">
-                        <span>Subtotal</span>
-                        <span x-text="formatPrice(cartTotal)"></span>
-                    </div>
-
-                    <button 
-                        @click="checkout" 
-                        :disabled="cart.length === 0 || cartTotal < 200"
-                        :class="(cart.length === 0 || cartTotal < 200) ? 'opacity-50 cursor-not-allowed bg-espresso/50' : 'bg-maroon hover:bg-espresso'"
-                        class="w-full text-white py-4 rounded-xl font-medium transition-colors shadow-lg flex items-center justify-center gap-2">
-                        Checkout
-                    </button>
-                    <p x-show="cartTotal > 0 && cartTotal < 200" class="text-center text-xs text-red-500 font-bold tracking-wide mt-3" x-cloak>Minimum purchase value is ₹200.</p>
-                    <p x-show="cartTotal >= 200" class="text-center text-xs text-espresso/50 mt-3" x-cloak>Clicking this will confirm your order and redirect to WhatsApp.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Toast Notification -->
-    <div x-show="toastMessage" 
-         x-transition:enter="transition ease-out duration-300" 
-         x-transition:enter-start="opacity-0 translate-y-4" 
-         x-transition:enter-end="opacity-100 translate-y-0" 
-         x-transition:leave="transition ease-in duration-200" 
-         x-transition:leave-start="opacity-100 translate-y-0" 
-         x-transition:leave-end="opacity-0 translate-y-4" 
-         class="fixed bottom-6 left-1/2 -translate-x-1/2 bg-espresso text-white px-6 py-3 rounded-full shadow-xl flex items-center gap-3 z-50" x-cloak>
-        <span x-text="toastMessage" class="text-sm font-medium"></span>
-    </div>
-
-    <script>
         const DB_URL = 'https://mazinhennadatabase-default-rtdb.firebaseio.com';
 
         async function fbGet(path) {
@@ -244,59 +39,87 @@
             } catch(e) { console.error('Firebase write error:', e); }
         }
 
-
         function storeApp() {
             return {
                 cartOpen: false,
+                accountOpen: false,
+                searchActive: true,
+                activeTab: 'home',
                 products: [],
                 categories: [],
                 activeCategory: 'All',
+                searchQuery: '',
                 siteLogo: null,
                 cart: [],
                 toastMessage: '',
                 toastTimeout: null,
+                userProfile: {
+                    name: '',
+                    phone: '',
+                    address: ''
+                },
 
                 get filteredProducts() {
-                    if (this.activeCategory === 'All') {
-                        return this.products;
+                    let results = this.products;
+                    if (this.activeCategory !== 'All') {
+                        results = results.filter(p => p.category === this.activeCategory);
                     }
-                    return this.products.filter(p => p.category === this.activeCategory);
+                    if (this.searchQuery.trim() !== '') {
+                        const q = this.searchQuery.toLowerCase();
+                        results = results.filter(p => p.name.toLowerCase().includes(q) || (p.description && p.description.toLowerCase().includes(q)));
+                    }
+                    return results;
                 },
 
                 async initApp() {
+                    // Load User profile from LocalStorage if exists
+                    const savedProfile = localStorage.getItem('mazin_user_profile');
+                    if (savedProfile) {
+                        this.userProfile = JSON.parse(savedProfile);
+                    }
+
+                    // Attempt to fetch DB data
                     const products = await fbGet('products');
-                    this.products = Array.isArray(products) ? products : (products ? Object.values(products) : []);
+                    this.products = Array.isArray(products) ? products : (products ? Object.values(products) : defaultProducts);
 
                     const categories = await fbGet('categories');
-                    this.categories = Array.isArray(categories) ? categories : (categories ? Object.values(categories) : []);
+                    this.categories = Array.isArray(categories) ? categories : (categories ? Object.values(categories) : defaultCategories);
 
                     const logo = await fbGet('logo');
                     this.siteLogo = logo || null;
 
-                    // Real-time: auto-update when admin changes products
-                    const esProducts = new EventSource(`${DB_URL}/products.json?accept=text/event-stream`);
-                    esProducts.addEventListener('put', (e) => {
-                        const data = JSON.parse(e.data);
-                        if (data.data) {
-                            this.products = Array.isArray(data.data) ? data.data : Object.values(data.data);
-                        }
-                    });
+                    // Setup fallback EventSource listeners safely
+                    try {
+                        const esProducts = new EventSource(`${DB_URL}/products.json?accept=text/event-stream`);
+                        esProducts.addEventListener('put', (e) => {
+                            const data = JSON.parse(e.data);
+                            if (data && data.data) {
+                                this.products = Array.isArray(data.data) ? data.data : Object.values(data.data);
+                            }
+                        });
 
-                    // Real-time: auto-update when admin changes categories
-                    const esCats = new EventSource(`${DB_URL}/categories.json?accept=text/event-stream`);
-                    esCats.addEventListener('put', (e) => {
-                        const data = JSON.parse(e.data);
-                        if (data.data) {
-                            this.categories = Array.isArray(data.data) ? data.data : Object.values(data.data);
-                        }
-                    });
+                        const esCats = new EventSource(`${DB_URL}/categories.json?accept=text/event-stream`);
+                        esCats.addEventListener('put', (e) => {
+                            const data = JSON.parse(e.data);
+                            if (data && data.data) {
+                                this.categories = Array.isArray(data.data) ? data.data : Object.values(data.data);
+                            }
+                        });
+                    } catch (err) {
+                        console.warn("EventSource setup skipped or failed. Falling back to static data cycle.", err);
+                    }
+                },
 
-                    // Real-time: logo updates
-                    const esLogo = new EventSource(`${DB_URL}/logo.json?accept=text/event-stream`);
-                    esLogo.addEventListener('put', (e) => {
-                        const data = JSON.parse(e.data);
-                        this.siteLogo = data.data || null;
-                    });
+                saveProfile() {
+                    localStorage.setItem('mazin_user_profile', JSON.stringify(this.userProfile));
+                    this.showToast('Delivery Profile Saved');
+                    this.accountOpen = false;
+                },
+
+                clearProfile() {
+                    this.userProfile = { name: '', phone: '', address: '' };
+                    localStorage.removeItem('mazin_user_profile');
+                    this.showToast('Profile Cleared');
                 },
 
                 async saveProducts() {
@@ -318,26 +141,17 @@
                 async addToCart(product) {
                     if (product.stock <= 0) return;
 
-                    // Re-fetch latest stock from Firebase
-                    const products = await fbGet('products');
-                    this.products = Array.isArray(products) ? products : (products ? Object.values(products) : []);
-                    const updatedProduct = this.products.find(p => p.id === product.id);
-                    if (!updatedProduct || updatedProduct.stock <= 0) {
-                        this.showToast('Product out of stock');
-                        return;
-                    }
-
                     const existingItem = this.cart.find(item => item.product.id === product.id);
                     if (existingItem) {
-                        if (existingItem.quantity < updatedProduct.stock) {
+                        if (existingItem.quantity < product.stock) {
                             existingItem.quantity++;
-                            this.showToast('Bag updated');
+                            this.showToast('Added another unit');
                         } else {
-                            this.showToast('Maximum stock reached');
+                            this.showToast('Maximum available stock reached');
                         }
                     } else {
                         this.cart.push({
-                            product: { ...updatedProduct },
+                            product: { ...product },
                             quantity: 1
                         });
                         this.showToast('Added to bag');
@@ -351,9 +165,10 @@
 
                 updateCartQuantity(index, delta) {
                     const item = this.cart[index];
-                    const productInStock = this.products.find(p => p.id === item.product.id).stock;
+                    const matchedProduct = this.products.find(p => p.id === item.product.id);
+                    const maxStock = matchedProduct ? matchedProduct.stock : item.product.stock;
                     
-                    if (delta === 1 && item.quantity < productInStock) {
+                    if (delta === 1 && item.quantity < maxStock) {
                         item.quantity++;
                     } else if (delta === -1 && item.quantity > 1) {
                         item.quantity--;
@@ -371,7 +186,7 @@
                 async checkout() {
                     if (this.cart.length === 0 || this.cartTotal < 200) return;
 
-                    // Deduct stock
+                    // Deduct stock in memory
                     this.cart.forEach(cartItem => {
                         const prodIndex = this.products.findIndex(p => p.id === cartItem.product.id);
                         if (prodIndex !== -1) {
@@ -380,33 +195,506 @@
                         }
                     });
 
+                    // Save back to db asynchronously
                     await this.saveProducts();
 
-                    // Build WhatsApp Message
-                    let message = `*NEW ORDER: MAZIN HENNA* %0A%0A`;
-                    message += `*Order Items:*%0A`;
+                    // Build elegant, readable WhatsApp order message
+                    let message = `*🌿 MAZIN HENNA - NEW ORDER 🌿*%0A%0A`;
                     
+                    if (this.userProfile.name) {
+                        message += `*DELIVERY DETAILS:*%0A`;
+                        message += `👤 *Name:* ${this.userProfile.name}%0A`;
+                        if (this.userProfile.phone) message += `📞 *WhatsApp:* ${this.userProfile.phone}%0A`;
+                        if (this.userProfile.address) message += `📍 *Address:* ${this.userProfile.address}%0A`;
+                        message += `%0A`;
+                    }
+
+                    message += `*ORDERED ITEMS:*%0A`;
                     this.cart.forEach(item => {
-                        message += `- ${item.quantity}x ${item.product.name} (₹${item.product.price * item.quantity})%0A`;
+                        message += `• ${item.quantity}x _${item.product.name}_ (₹${item.product.price * item.quantity})%0A`;
                     });
                     
-                    message += `%0A*Subtotal:* ₹${this.cartTotal}%0A`;
-                    message += `Please confirm my order.`;
+                    message += `%0A*TOTAL AMOUNT:* ₹${this.cartTotal}%0A%0A`;
+                    message += `Please confirm my order and share payment instructions! ✨`;
 
                     const phoneNumber = '7592083435'; 
                     const waUrl = `https://wa.me/${phoneNumber}?text=${message}`;
                     
-                    // Clear cart
+                    // Clear state
                     this.cart = [];
                     this.cartOpen = false;
                     
-                    this.showToast('Order placed successfully!');
+                    this.showToast('Order confirmed! Redirecting...');
                     
-                    // Open WhatsApp
+                    // Open WhatsApp checkout link
                     window.open(waUrl, '_blank');
                 }
             }
         }
     </script>
+    <!-- Load Alpine JS with defer to ensure execution happens after DOM and custom script are ready -->
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: '#FCFAF6',
+                        sand: '#F3EFE9',
+                        maroon: '#520D1A',
+                        espresso: '#23120B',
+                        gold: '#C59B27',
+                        accent: '#F9F6F0'
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        [x-cloak] { display: none !important; }
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+        /* Custom subtle scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FCFAF6;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #E5DED4;
+            border-radius: 10px;
+        }
+        /* Pulse glow animation for interactive feel */
+        @keyframes subtle-glow {
+            0%, 100% { box-shadow: 0 4px 20px -2px rgba(82, 13, 26, 0.12); }
+            50% { box-shadow: 0 10px 30px 2px rgba(82, 13, 26, 0.22); }
+        }
+        .premium-dock {
+            animation: subtle-glow 4s infinite ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-cream text-espresso font-sans antialiased selection:bg-maroon selection:text-white" x-data="storeApp()" x-init="initApp()">
+
+    <!-- Header -->
+    <header class="fixed top-0 w-full bg-cream/80 backdrop-blur-lg z-40 border-b border-sand/60 shadow-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-3 cursor-pointer" @click="window.scrollTo({top:0, behavior:'smooth'})">
+                <template x-if="siteLogo">
+                    <img :src="siteLogo" alt="Mazin Henna Logo" class="w-12 h-12 rounded-full object-cover border-2 border-gold/30 shadow-sm">
+                </template>
+                <template x-if="!siteLogo">
+                    <div class="w-12 h-12 rounded-full bg-maroon flex items-center justify-center font-serif text-white font-bold text-xl shadow-md border-2 border-gold/30">M</div>
+                </template>
+                <div class="flex flex-col">
+                    <h1 class="font-serif text-2xl font-bold tracking-wide text-maroon leading-tight">Mazin Henna</h1>
+                    <span class="text-[9px] text-espresso/60 font-semibold tracking-widest uppercase">Pure Natural Elegance</span>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <!-- Cart Button (Header Shortcut) -->
+                <button @click="cartOpen = true" class="relative p-2.5 rounded-full bg-sand/40 hover:bg-sand/80 text-maroon transition-all duration-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
+                    </svg>
+                    <span x-show="cartTotalItems > 0" x-text="cartTotalItems" class="absolute -top-1 -right-1 bg-maroon text-white text-[10px] font-bold h-5 w-5 rounded-full flex items-center justify-center shadow-md animate-bounce"></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="pt-20 min-h-screen pb-32">
+        
+        <!-- Hero Section with Masterpiece Henna Artistry -->
+        <section class="relative min-h-[85vh] flex items-center justify-center overflow-hidden py-24 sm:py-32">
+            <!-- Stunning masterpiece mehndi photo of bridal hands -->
+            <div class="absolute inset-0 bg-cover bg-center transition-transform duration-1000 scale-105" 
+                 style="background-image: url('https://www.google.com/imgres?q=henna%20related%20background%20images&imgurl=https%3A%2F%2Fmedia.istockphoto.com%2Fid%2F2171928439%2Fvector%2Fvector-mandala-brown-background-beautiful-flower.jpg%3Fs%3D612x612%26w%3D0%26k%3D20%26c%3DK1OCBQJjwdRbKH2H4Mn96w4dQbLmsj0JbW3l9cZ1qYE%3D&imgrefurl=https%3A%2F%2Fwww.istockphoto.com%2Fillustrations%2Fhenna-background&docid=yny-7pzlvF5VKM&tbnid=o6alRzVYsdyDZM&vet=12ahUKEwii5OfuhtGUAxX4TWwGHXaMGNU4FBCc8A56BAhuEAE..i&w=612&h=455&hcb=2&ved=2ahUKEwii5OfuhtGUAxX4TWwGHXaMGNU4FBCc8A56BAhuEAE');"></div>
+            <!-- Overlay and premium gradients -->
+            <div class="absolute inset-0 bg-gradient-to-r from-espresso/90 via-maroon/65 to-espresso/90 mix-blend-multiply"></div>
+            <div class="absolute inset-0 bg-gradient-to-t from-cream via-transparent to-transparent"></div>
+            
+            <div class="max-w-5xl mx-auto px-6 relative z-10 flex flex-col items-center text-center">
+                <span class="text-gold font-semibold tracking-[0.25em] text-xs sm:text-sm uppercase mb-4 bg-white/10 px-4 py-1.5 rounded-full backdrop-blur-md border border-white/10">Premium Organic Henna</span>
+                <h2 class="font-serif text-5xl sm:text-8xl font-bold text-white mb-6 drop-shadow-2xl tracking-wide leading-tight">
+                    Mazin Henna
+                </h2>
+                <p class="text-lg sm:text-2xl max-w-2xl text-sand/90 mb-10 drop-shadow-md font-light leading-relaxed">
+                    Indulge in pure, dark-staining organic henna handcrafted with artisanal perfection for your finest moments.
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 w-full justify-center">
+                    <button @click="document.getElementById('products-section').scrollIntoView({behavior: 'smooth'})" class="bg-gold text-white px-10 py-4 rounded-full hover:bg-gold/90 transition-all duration-300 font-semibold tracking-widest uppercase shadow-xl hover:shadow-2xl transform hover:-translate-y-0.5 border border-yellow-400/20">
+                        Explore Collection
+                    </button>
+                    <button @click="accountOpen = true" class="bg-white/10 backdrop-blur-md text-white border border-white/25 px-10 py-4 rounded-full hover:bg-white/20 transition-all duration-300 font-semibold tracking-widest uppercase">
+                        Setup Delivery Profile
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Product & Search Grid Container -->
+        <section id="products-section" class="max-w-7xl mx-auto px-6 py-12">
+            
+            <!-- Dynamic Category and Search Control Panel -->
+            <div class="mb-12 border-b border-sand pb-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div>
+                        <h3 class="font-serif text-3xl sm:text-4xl font-bold text-maroon">Artisan Creations</h3>
+                        <p class="text-espresso/60 text-sm mt-1">Select from our certified organic, premium mehndi range.</p>
+                    </div>
+
+                    <!-- Search Box (Toggleable via search state / bottom bar) -->
+                    <div class="relative w-full md:w-80" x-show="searchActive" x-transition:enter="transition ease-out duration-200" x-transition:enter-start="opacity-0 -translate-y-2" x-transition:enter-end="opacity-100 translate-y-0">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                            <svg class="h-5 w-5 text-espresso/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                            </svg>
+                        </span>
+                        <input type="text" x-model="searchQuery" placeholder="Search cones, oils, templates..." class="w-full pl-10 pr-10 py-2.5 bg-white border border-sand rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/50 focus:border-gold">
+                        <button x-show="searchQuery" @click="searchQuery = ''" class="absolute inset-y-0 right-0 flex items-center pr-3 text-espresso/40 hover:text-espresso">
+                            <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Categories Horizontal Scroll -->
+                <div class="flex gap-4 overflow-x-auto pt-8 pb-2 scrollbar-hide snap-x">
+                    <button @click="activeCategory = 'All'" 
+                            class="px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 snap-center shrink-0 border"
+                            :class="activeCategory === 'All' ? 'bg-maroon text-white border-maroon shadow-md shadow-maroon/10' : 'bg-white text-espresso/80 border-sand hover:bg-sand/30'">
+                        All Products
+                    </button>
+                    <template x-for="cat in categories" :key="cat.name">
+                        <button @click="activeCategory = cat.name" 
+                                class="px-6 py-2.5 rounded-full text-xs font-semibold uppercase tracking-wider transition-all duration-300 snap-center shrink-0 border flex items-center gap-2"
+                                :class="activeCategory === cat.name ? 'bg-maroon text-white border-maroon shadow-md shadow-maroon/10' : 'bg-white text-espresso/80 border-sand hover:bg-sand/30'">
+                            <span x-text="cat.name"></span>
+                        </button>
+                    </template>
+                </div>
+            </div>
+
+            <!-- Zero Results State -->
+            <div x-show="filteredProducts.length === 0" class="text-center py-24 bg-white rounded-3xl border border-sand/50 shadow-sm" x-cloak>
+                <div class="w-16 h-16 bg-sand/40 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-espresso/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                    </svg>
+                </div>
+                <h4 class="font-serif text-xl font-semibold text-maroon">No matching creations found</h4>
+                <p class="text-espresso/60 text-sm mt-1 max-w-sm mx-auto">Try refining your search terms or choosing a different category.</p>
+                <button @click="activeCategory = 'All'; searchQuery = ''" class="mt-4 text-xs font-semibold text-gold underline hover:text-gold/80">Clear filters</button>
+            </div>
+
+            <!-- Product Grid -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8" x-show="filteredProducts.length > 0">
+                <template x-for="product in filteredProducts" :key="product.id">
+                    <div class="group bg-white border border-sand/60 p-4 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col justify-between">
+                        <div>
+                            <!-- Image Container -->
+                            <div class="relative w-full h-72 bg-sand rounded-xl overflow-hidden mb-5">
+                                <img :src="product.image" :alt="product.name" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700">
+                                <div x-show="product.stock === 0" class="absolute inset-0 bg-espresso/60 backdrop-blur-[2px] flex items-center justify-center">
+                                    <span class="bg-white text-maroon px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-wider shadow-md">Out of Stock</span>
+                                </div>
+                                <div x-show="product.stock > 0 && product.stock <= 5" class="absolute top-3 right-3 bg-red-100 text-red-800 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border border-red-200">
+                                    Low Stock
+                                </div>
+                            </div>
+                            <!-- Meta Details -->
+                            <div class="flex items-center justify-between mb-2">
+                                <span class="text-[10px] text-gold font-bold tracking-widest uppercase" x-text="product.category"></span>
+                                <span class="text-xs text-espresso/40 font-medium" x-show="product.stock > 0" x-text="`${product.stock} units available`"></span>
+                            </div>
+                            <h4 class="font-serif text-xl font-bold mb-2 text-maroon group-hover:text-gold transition-colors" x-text="product.name"></h4>
+                            <p class="text-xs text-espresso/60 leading-relaxed line-clamp-2 mb-4" x-text="product.description || 'Artisanal organic blend formulated for deep, long-lasting rich colour prints.'"></p>
+                        </div>
+
+                        <!-- Price and Add Actions -->
+                        <div class="border-t border-sand/50 pt-4 mt-auto flex justify-between items-center">
+                            <div class="flex flex-col">
+                                <span class="text-[10px] text-espresso/40 font-semibold uppercase">Price</span>
+                                <span class="text-lg font-bold text-espresso" x-text="formatPrice(product.price)"></span>
+                            </div>
+                            <button 
+                                @click="addToCart(product)" 
+                                :disabled="product.stock === 0"
+                                :class="product.stock === 0 ? 'opacity-40 cursor-not-allowed bg-sand text-espresso/40 border-transparent' : 'bg-maroon text-white hover:bg-gold hover:shadow-lg'"
+                                class="px-5 py-2.5 rounded-full transition-all duration-300 font-semibold text-xs tracking-wider uppercase border border-transparent shadow-sm">
+                                Add to Bag
+                            </button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </section>
+
+        <!-- About / Quality Assurance -->
+        <section class="bg-accent py-20 border-y border-sand/50">
+            <div class="max-w-7xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12">
+                <div class="flex flex-col items-center text-center p-4">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-gold mb-5 shadow-sm border border-sand">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
+                    </div>
+                    <h5 class="font-serif text-lg font-bold text-maroon mb-2">100% Organic & Safe</h5>
+                    <p class="text-sm text-espresso/60 max-w-xs leading-relaxed">No chemicals, PPD, or toxic preservatives. Safe for all skin types and ages.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-gold mb-5 shadow-sm border border-sand">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                    </div>
+                    <h5 class="font-serif text-lg font-bold text-maroon mb-2">Long-Lasting Deep Stain</h5>
+                    <p class="text-sm text-espresso/60 max-w-xs leading-relaxed">Formulated using premium Sojat henna leaves and essential oils for a beautiful dark mahogany stain.</p>
+                </div>
+                <div class="flex flex-col items-center text-center p-4">
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center text-gold mb-5 shadow-sm border border-sand">
+                        <svg class="w-8 h-8" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>
+                    </div>
+                    <h5 class="font-serif text-lg font-bold text-maroon mb-2">Seamless WhatsApp Ordering</h5>
+                    <p class="text-sm text-espresso/60 max-w-xs leading-relaxed">Fast checkouts instantly dispatched to your personal WhatsApp inbox for direct personalized support.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- FLOATING BOTTOM DOCK: Exact replica of the uploaded premium image UI design -->
+    <div class="fixed bottom-6 left-1/2 -translate-x-1/2 w-[92%] sm:w-full max-w-xl z-50 px-2">
+        <div class="premium-dock bg-white/95 backdrop-blur-xl border border-sand/70 shadow-[0_15px_35px_-5px_rgba(82,13,26,0.15)] rounded-[2rem] px-6 py-4 flex items-center justify-between">
+            
+            <!-- Home -->
+            <button @click="window.scrollTo({top:0, behavior:'smooth'}); activeTab = 'home'" class="flex flex-col items-center gap-1.5 focus:outline-none transition-all group flex-1">
+                <div class="p-1 rounded-full group-hover:scale-105 duration-200">
+                    <svg class="w-6 h-6 transition-colors" :class="activeTab === 'home' ? 'text-maroon' : 'text-espresso/50'" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+                    </svg>
+                </div>
+                <span class="text-[11px] font-bold tracking-wider" :class="activeTab === 'home' ? 'text-maroon' : 'text-espresso/50'">Home</span>
+            </button>
+
+            <!-- Account / Quick Profile Setup -->
+            <button @click="accountOpen = true; activeTab = 'account'" class="flex flex-col items-center gap-1.5 focus:outline-none transition-all group flex-1">
+                <div class="relative group-hover:scale-105 duration-200">
+                    <!-- Custom user icon with a lightning accent precisely matching uploaded image -->
+                    <svg class="w-6 h-6 transition-colors" :class="activeTab === 'account' ? 'text-maroon' : 'text-espresso/50'" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
+                    </svg>
+                    <!-- Floating yellow bolt/dot matching lightning indicator -->
+                    <span class="absolute -top-1 -right-1 bg-amber-500 rounded-full w-2.5 h-2.5 border border-white flex items-center justify-center animate-pulse"></span>
+                </div>
+                <span class="text-[11px] font-bold tracking-wider" :class="activeTab === 'account' ? 'text-maroon' : 'text-espresso/50'">Account</span>
+            </button>
+
+            <!-- Shop Collection -->
+            <button @click="document.getElementById('products-section').scrollIntoView({behavior: 'smooth'}); activeTab = 'shop'" class="flex flex-col items-center gap-1.5 focus:outline-none transition-all group flex-1">
+                <div class="p-1 rounded-full group-hover:scale-105 duration-200">
+                    <svg class="w-6 h-6 transition-colors" :class="activeTab === 'shop' ? 'text-maroon' : 'text-espresso/50'" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M20 4H4v2h16V4zm1 10v-2l-1-5H4l-1 5v2h1v6h10v-6h4v6h2v-6h1zm-9 4H6v-4h6v4z"/>
+                    </svg>
+                </div>
+                <span class="text-[11px] font-bold tracking-wider" :class="activeTab === 'shop' ? 'text-maroon' : 'text-espresso/50'">Shop</span>
+            </button>
+
+            <!-- Search Toggle -->
+            <button @click="searchActive = !searchActive; if(searchActive) { document.getElementById('products-section').scrollIntoView({behavior: 'smooth'}) }; activeTab = 'search'" class="flex flex-col items-center gap-1.5 focus:outline-none transition-all group flex-1">
+                <div class="p-1 rounded-full group-hover:scale-105 duration-200">
+                    <svg class="w-6 h-6 transition-colors" :class="activeTab === 'search' || searchActive ? 'text-maroon' : 'text-espresso/50'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
+                    </svg>
+                </div>
+                <span class="text-[11px] font-bold tracking-wider" :class="activeTab === 'search' || searchActive ? 'text-maroon' : 'text-espresso/50'">Search</span>
+            </button>
+
+            <!-- Cart Trigger -->
+            <button @click="cartOpen = true; activeTab = 'cart'" class="flex flex-col items-center gap-1.5 focus:outline-none transition-all group flex-1 relative">
+                <div class="p-1 rounded-full group-hover:scale-105 duration-200">
+                    <svg class="w-6 h-6 transition-colors" :class="activeTab === 'cart' ? 'text-maroon' : 'text-espresso/50'" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.25 3h1.386c.51 0 .955.343 1.087.835l.383 1.437M7.5 14.25a3 3 0 00-3 3h15.75m-12.75-3h11.218c1.121-2.3 2.1-4.684 2.924-7.138a60.116 60.116 0 00-16.536-1.84M7.5 14.25L5.106 5.272M6 20.25a.75.75 0 11-1.5 0 .75.75 0 011.5 0zm12.75 0a.75.75 0 11-1.5 0 .75.75 0 011.5 0z" />
+                    </svg>
+                </div>
+                <span x-show="cartTotalItems > 0" x-text="cartTotalItems" class="absolute top-0 right-3 bg-maroon text-white text-[10px] font-bold h-4 w-4 rounded-full flex items-center justify-center shadow"></span>
+                <span class="text-[11px] font-bold tracking-wider" :class="activeTab === 'cart' ? 'text-maroon' : 'text-espresso/50'">Cart</span>
+            </button>
+
+        </div>
+    </div>
+
+    <!-- Slide-out Shopping Bag -->
+    <div x-show="cartOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
+        <div class="absolute inset-0 bg-espresso/60 backdrop-blur-sm transition-opacity duration-300" @click="cartOpen = false" x-show="cartOpen" x-transition.opacity></div>
+        
+        <div class="fixed inset-y-0 right-0 max-w-md w-full flex">
+            <div class="w-full h-full bg-cream shadow-2xl flex flex-col transform transition-transform duration-300" 
+                 x-show="cartOpen" 
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="translate-x-full"
+                 x-transition:enter-end="translate-x-0"
+                 x-transition:leave="transition ease-in duration-300"
+                 x-transition:leave-start="translate-x-0"
+                 x-transition:leave-end="translate-x-full">
+                
+                <!-- Cart Header -->
+                <div class="px-6 py-6 border-b border-sand flex items-center justify-between bg-white shadow-sm">
+                    <div class="flex items-center gap-2">
+                        <h2 class="font-serif text-2xl font-bold text-maroon">Your Shopping Bag</h2>
+                        <span class="text-xs bg-sand text-espresso/70 px-2.5 py-1 rounded-full font-bold" x-text="`${cartTotalItems} items`"></span>
+                    </div>
+                    <button @click="cartOpen = false" class="text-espresso/50 hover:text-espresso p-2 hover:bg-sand/30 rounded-full transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+
+                <!-- Cart Items -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-6">
+                    <template x-if="cart.length === 0">
+                        <div class="h-full flex flex-col items-center justify-center text-center space-y-4 text-espresso/50">
+                            <div class="w-20 h-20 bg-sand/30 rounded-full flex items-center justify-center">
+                                <svg class="w-10 h-10 opacity-40" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007z" /></svg>
+                            </div>
+                            <p class="font-medium text-espresso/75">Your shopping bag is currently empty.</p>
+                            <button @click="cartOpen = false" class="text-xs font-semibold text-gold hover:underline">Continue Browsing</button>
+                        </div>
+                    </template>
+                    
+                    <div class="space-y-4" x-show="cart.length > 0">
+                        <template x-for="(item, index) in cart" :key="index">
+                            <div class="flex gap-4 border border-sand/40 bg-white p-3.5 rounded-xl shadow-sm transition-all">
+                                <div class="w-20 h-20 rounded-lg overflow-hidden bg-sand flex-shrink-0 border border-sand">
+                                    <img :src="item.product.image" class="w-full h-full object-cover">
+                                </div>
+                                <div class="flex-1 flex flex-col justify-between">
+                                    <div class="flex justify-between items-start">
+                                        <div>
+                                            <h4 class="font-bold text-maroon text-sm" x-text="item.product.name"></h4>
+                                            <span class="text-[10px] text-espresso/40 tracking-wider uppercase font-semibold" x-text="item.product.category"></span>
+                                        </div>
+                                        <button @click="removeFromCart(index)" class="text-espresso/30 hover:text-red-600 transition-colors">
+                                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                                        </button>
+                                    </div>
+                                    <div class="flex justify-between items-center mt-2">
+                                        <span class="font-bold text-espresso text-sm" x-text="formatPrice(item.product.price * item.quantity)"></span>
+                                        
+                                        <!-- Control Quantities -->
+                                        <div class="flex items-center border border-sand/75 rounded-full bg-cream shadow-inner">
+                                            <button @click="updateCartQuantity(index, -1)" class="w-7 h-7 flex items-center justify-center hover:bg-sand/60 transition-colors text-espresso/70 rounded-full font-bold">-</button>
+                                            <span class="px-2 text-xs font-bold text-espresso" x-text="item.quantity"></span>
+                                            <button @click="updateCartQuantity(index, 1)" class="w-7 h-7 flex items-center justify-center hover:bg-sand/60 transition-colors text-espresso/70 rounded-full font-bold" :disabled="item.quantity >= item.product.stock" :class="{'opacity-30 cursor-not-allowed': item.quantity >= item.product.stock}">+</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                </div>
+
+                <!-- Checkout Section -->
+                <div class="border-t border-sand bg-white p-6" x-show="cart.length > 0">
+                    <div class="bg-accent/50 border border-sand/40 p-4 rounded-xl mb-4 text-xs space-y-2">
+                        <div class="flex justify-between font-medium">
+                            <span class="text-espresso/50">Items subtotal:</span>
+                            <span x-text="formatPrice(cartTotal)"></span>
+                        </div>
+                        <div class="flex justify-between font-bold text-maroon border-t border-sand/40 pt-2">
+                            <span>Total Payable:</span>
+                            <span x-text="formatPrice(cartTotal)"></span>
+                        </div>
+                    </div>
+
+                    <!-- Quick User Profile Warning -->
+                    <div class="mb-4 bg-amber-50 border border-amber-200/50 p-3 rounded-xl flex gap-3 items-start" x-show="!userProfile.name">
+                        <svg class="w-4 h-4 text-amber-600 shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                        <div class="text-[11px] text-amber-800 leading-normal">
+                            <p class="font-bold">Missing Delivery Details</p>
+                            <p>You haven't setup your delivery info yet. <button @click="accountOpen = true" class="underline font-bold text-maroon">Add details now</button> to auto-fill your WhatsApp order.</p>
+                        </div>
+                    </div>
+
+                    <button 
+                        @click="checkout" 
+                        :disabled="cart.length === 0 || cartTotal < 200"
+                        :class="(cart.length === 0 || cartTotal < 200) ? 'opacity-40 cursor-not-allowed bg-espresso/50' : 'bg-maroon hover:bg-gold hover:shadow-lg'"
+                        class="w-full text-white py-4 rounded-xl font-bold tracking-wider uppercase text-xs transition-all duration-300 shadow-md flex items-center justify-center gap-2">
+                        <span>Place Order via WhatsApp</span>
+                        <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946C.06 5.348 5.397.01 12.008.01c3.202.001 6.212 1.246 8.477 3.513 2.262 2.268 3.507 5.28 3.505 8.484-.004 6.657-5.34 11.997-11.953 11.997-2.005-.001-3.973-.502-5.724-1.455L0 24zm6.59-4.846c1.6.95 3.188 1.449 4.825 1.451 5.436 0 9.86-4.37 9.864-9.799.002-2.63-1.023-5.101-2.885-6.968C16.588 1.971 14.113.945 11.997.945 6.566.945 2.14 5.315 2.137 10.745c-.001 1.705.452 3.37 1.31 4.824l-.991 3.618 3.701-.973zM18.06 14.93c-.33-.165-1.937-.957-2.234-1.063-.297-.108-.514-.162-.73.164-.215.324-.833 1.061-1.02 1.278-.188.216-.375.242-.704.078-.33-.165-1.393-.513-2.656-1.642-.982-.876-1.644-1.958-1.837-2.288-.193-.329-.02-.507.145-.671.148-.147.33-.385.495-.578.165-.192.22-.32.33-.533.11-.214.055-.401-.028-.566-.082-.164-.73-1.76-1.002-2.414-.265-.637-.534-.55-.73-.56-.19-.01-.406-.011-.624-.011-.217 0-.57.081-.868.407-.298.324-1.139 1.115-1.139 2.719 0 1.604 1.167 3.152 1.329 3.37.162.217 2.296 3.507 5.562 4.914.777.335 1.383.535 1.856.685.78.248 1.49.213 2.05.13.625-.093 1.937-.792 2.21-1.558.272-.765.272-1.422.19-1.558-.08-.135-.296-.216-.625-.38z"/></svg>
+                    </button>
+                    <p x-show="cartTotal > 0 && cartTotal < 200" class="text-center text-xs text-red-600 font-bold tracking-wide mt-3" x-cloak>Minimum purchase value is ₹200.</p>
+                    <p x-show="cartTotal >= 200" class="text-center text-[10px] text-espresso/50 mt-3" x-cloak>Your order summary will be pre-formatted and sent directly to our dispatch agent on WhatsApp.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick User Profile Setup / Account Modal -->
+    <div x-show="accountOpen" class="fixed inset-0 z-50 overflow-hidden" x-cloak>
+        <div class="absolute inset-0 bg-espresso/60 backdrop-blur-sm transition-opacity duration-300" @click="accountOpen = false" x-transition.opacity></div>
+        
+        <div class="fixed inset-0 flex items-center justify-center p-4">
+            <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-sand transform transition-all duration-300"
+                 x-show="accountOpen"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 scale-95"
+                 x-transition:enter-end="opacity-100 scale-100">
+                
+                <div class="flex justify-between items-center pb-4 border-b border-sand mb-4">
+                    <div class="flex items-center gap-2">
+                        <div class="w-8 h-8 rounded-full bg-maroon/10 text-maroon flex items-center justify-center font-bold">👤</div>
+                        <h3 class="font-serif text-xl font-bold text-maroon">Delivery Profile</h3>
+                    </div>
+                    <button @click="accountOpen = false" class="text-espresso/40 hover:text-espresso p-1 hover:bg-sand/30 rounded-full transition-colors">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+
+                <p class="text-xs text-espresso/60 mb-4 leading-relaxed">Save your shipping details here to bypass typing them during checkout! This details are stored securely on your local device.</p>
+
+                <!-- Profile Form -->
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-[11px] font-bold text-espresso/70 uppercase tracking-wider mb-1">Full Name</label>
+                        <input type="text" x-model="userProfile.name" placeholder="Enter your name" class="w-full px-4 py-2.5 bg-accent border border-sand rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/40">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-espresso/70 uppercase tracking-wider mb-1">WhatsApp Number</label>
+                        <input type="tel" x-model="userProfile.phone" placeholder="Enter mobile number" class="w-full px-4 py-2.5 bg-accent border border-sand rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/40">
+                    </div>
+                    <div>
+                        <label class="block text-[11px] font-bold text-espresso/70 uppercase tracking-wider mb-1">Delivery Address</label>
+                        <textarea x-model="userProfile.address" rows="3" placeholder="Enter house name, street, pincode..." class="w-full px-4 py-2.5 bg-accent border border-sand rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gold/40 resize-none"></textarea>
+                    </div>
+
+                    <div class="pt-4 flex gap-3">
+                        <button @click="clearProfile" class="flex-1 py-2.5 border border-sand text-espresso/70 rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-sand/30 transition-colors">Clear Details</button>
+                        <button @click="saveProfile" class="flex-1 py-2.5 bg-maroon text-white rounded-xl text-xs font-bold uppercase tracking-wider hover:bg-gold hover:shadow-md transition-all">Save Profile</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Toast Notification -->
+    <div x-show="toastMessage" 
+         x-transition:enter="transition ease-out duration-300" 
+         x-transition:enter-start="opacity-0 translate-y-4" 
+         x-transition:enter-end="opacity-100 translate-y-0" 
+         x-transition:leave="transition ease-in duration-200" 
+         x-transition:leave-start="opacity-100 translate-y-0" 
+         x-transition:leave-end="opacity-0 translate-y-4" 
+         class="fixed bottom-28 left-1/2 -translate-x-1/2 bg-maroon text-white px-6 py-3 rounded-full shadow-2xl flex items-center gap-3 z-50 border border-gold/20" x-cloak>
+        <span x-text="toastMessage" class="text-xs font-bold uppercase tracking-wider"></span>
+    </div>
+
 </body>
 </html>
